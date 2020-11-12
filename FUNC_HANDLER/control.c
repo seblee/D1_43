@@ -43,7 +43,7 @@
 #include "T5L_lib.h"
 
 u8 password[LEVEL_NUM][4]            = {0};
-const u32 defaultPassword[LEVEL_NUM] = {0, 1, 2, 160608, 666888, 519525};
+const u32 defaultPassword[LEVEL_NUM] = {0, 111111, 2, 160608, 666888, 519525};
 u8 passwordGotLevel                  = 0xff;
 
 const u8 pageLevel[][2] = {
@@ -57,12 +57,12 @@ const u8 pageLevel[][2] = {
     {PAGE07, 0},  //  PASSWORD_PAGEJUMP_07_EVENT
     {PAGE08, 0},  //  PASSWORD_PAGEJUMP_08_EVENT
     {PAGE09, 0},  //  PASSWORD_PAGEJUMP_09_EVENT
-    {PAGE10, 0},  //  PASSWORD_PAGEJUMP_0A_EVENT
+    {PAGE10, 1},  //  set page
     {PAGE11, 0},  //  PASSWORD_PAGEJUMP_0B_EVENT
     {PAGE12, 0},  //  PASSWORD_PAGEJUMP_0C_EVENT
     {PAGE13, 0},  //  PASSWORD_PAGEJUMP_0D_EVENT
     {PAGE14, 0},  //  PASSWORD_PAGEJUMP_0E_EVENT
-    {PAGE15, 1},  //  set page
+    {PAGE15, 1},  //  PASSWORD_PAGEJUMP_0F_EVENT
     {PAGE16, 0},  //  PASSWORD_PAGEJUMP_10_EVENT
     {PAGE17, 0},  //  PASSWORD_PAGEJUMP_11_EVENT
     {PAGE18, 2},  //  setSys
@@ -190,6 +190,12 @@ void touchHandler(void)
                 break;
             case PASSWORD_CHANGE_CANCLE_EVENT:
                 break;
+            case JUMP_TO_SET_1_EVENT:
+            case JUMP_TO_SET_2_EVENT:
+            case JUMP_TO_SET_3_EVENT:
+                jumpSetPageEventHandle(touchEventFlag);
+                break;
+
             // case ALARM_CLEAR_EVENT:
             //     alarmClearHandle();
             //     break;
@@ -229,6 +235,42 @@ void touchHandler(void)
         touchEventFlag = 0;
         WriteDGUS(TOUCH_EVENT_FLAG, (u8 *)&touchEventFlag, 2);
     }
+}
+/**
+ * @brief   jump to set event page
+ * @param  event            My Param doc
+ */
+void jumpSetPageEventHandle(u16 event)
+{
+    u16 cache;
+    ReadDGUS(0xa0a0, (u8 *)&cache, 2);
+    switch (event)
+    {
+        case 0xa000:
+            cache = 1;
+            break;
+        case 0xa001:
+            if (cache == 1)
+            {
+                cache = 3;
+            }
+            else
+            {
+                cache = 0;
+            }
+            break;
+        case 0xa002:
+            if (cache == 3)
+            {
+                passwordPageJumpEventHandle(PASSWORD_PAGEJUMP_0A_EVENT);
+            }
+            cache = 0;
+            break;
+        default:
+            cache = 0;
+            break;
+    }
+    WriteDGUS(0xa0a0, (u8 *)&cache, 2);
 }
 
 void resetEventHandle(void)
@@ -300,11 +342,13 @@ void passwordPageJumpEventHandle(u16 event)
     currentPage  = picNow;
     currentLevel = getPasswordLevel(event);
     mode         = PWM_PAGEJUMP;
+#ifdef LEVEL_PRIORITY
     if (currentLevel <= passwordGotLevel)
     {
         passwordOperation();
     }
     else
+#endif
     {
         JumpPage(4);
     }
@@ -316,11 +360,13 @@ void passwordFunEventHandle(u16 event)
     currentLevel = getPasswordLevel(event);
     currentPage  = picNow;
     mode         = PWM_FUN;
+#ifdef LEVEL_PRIORITY
     if (currentLevel <= passwordGotLevel)
     {
         passwordOperation();
     }
     else
+#endif
     {
         JumpPage(4);
     }
@@ -394,14 +440,21 @@ u8 getPasswordLevel(u16 event)
 
 u8 checkPassword(u8 level, u8 *input)
 {
+#ifdef LEVEL_PRIORITY
     u8 i;
+#endif
     if (level == 0)
         return 1;
+#ifdef LEVEL_PRIORITY
     for (i = level; i < LEVEL_NUM; i++)
     {
         if (memcmp(input, &password[i][0], 4) == 0)
             return 1;
     }
+#else
+    if (memcmp(input, &password[level][0], 4) == 0)
+        return 1;
+#endif
     return 0;
 }
 

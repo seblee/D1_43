@@ -58,7 +58,12 @@ void ui(void)
             cache[2] = SOFTWARE_VER;
             WriteDGUS(0xcc20, (u8*)cache, 6);
         }
-
+        if (picNow == PAGE00)
+        {
+        }
+        /**
+         * @brief   standby
+         */
         {
             static u16 timerCounter = 0;
             u16 cache;

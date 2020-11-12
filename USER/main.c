@@ -78,9 +78,9 @@ void main(void)
         // HandleProc();
         Modbus_Process_Task();  // Modbus串口处理流程
         ui();
-        alarmTask();
+        // alarmTask();
         touchHandler();
-        passwordTask();
+        // passwordTask();
         if (MS1msFlag)
         {
             MS1msFlag   = 0;
