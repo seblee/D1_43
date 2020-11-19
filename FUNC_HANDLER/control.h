@@ -104,9 +104,11 @@
 #define PASSWORD_CHANGE_CONFIRM_EVENT 0xA600
 #define PASSWORD_CHANGE_CANCLE_EVENT 0xA601
 
-#define JUMP_TO_SET_1_EVENT 0xa000
-#define JUMP_TO_SET_2_EVENT 0xa001
-#define JUMP_TO_SET_3_EVENT 0xa002
+#define JUMP_TO_SET_0_EVENT 0xa000
+#define JUMP_TO_SET_1_EVENT 0xa001
+#define JUMP_TO_SET_2_EVENT 0xa002
+#define NORMAL_WATEROUT_EVENT 0xa003
+#define HOT_WATEROUT_EVENT 0xa004
 
 #define ALARM_CLEAR_EVENT 0Xac00
 #define CUR_ALARM_CLEAR_EVENT 0Xac01
@@ -165,5 +167,6 @@ void passwordChangeConfirmEventHandle(void);
 void pageHandle(u16 page);
 
 void jumpSetPageEventHandle(u16 event);
+void WaterOutHandle(u16 event);
 
 #endif

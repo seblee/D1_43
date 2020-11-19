@@ -37,6 +37,9 @@
 #include "ui.h"
 #include "timer.h"
 u16 picNow = 0;
+
+void uiPage00Opt(void);
+
 /**
  * @brief ui task
  */
@@ -60,6 +63,7 @@ void ui(void)
         }
         if (picNow == PAGE00)
         {
+            uiPage00Opt();
         }
         /**
          * @brief   standby
@@ -104,4 +108,154 @@ void JumpPage(uint16_t pageId)
     //     DelayMs(5);
     //     ReadDGUS(DHW_SPAGE, temp, 1);
     // } while (temp[0] != 0);
+}
+/**
+ * @brief
+ */
+void uiPage00Opt(void)
+{
+    u16 cache[10];
+    u16 alarmCache[6] = {0};
+    u8 i, j, k = 0;
+    ReadDGUS(0xa020, (u8*)&cache[0], 10);
+    //水位状态
+    if (((cache[2] & (1 << 3))) == 0)  //到达低水位
+    {
+        cache[5] = 1;
+
+        if ((cache[0] & 0x40) != 0)  //饮水箱4浮球
+        {
+            if (((cache[2] & (1 << 6))) == 0)  //到达中水位
+            {
+                cache[5] = 2;
+                if (((cache[2] & (1 << 4))) == 0)  //到达满水位
+                {
+                    cache[5] = 3;
+                }
+                else
+                {
+                    cache[5] = 2;
+                }
+            }
+            else
+            {
+                cache[5] = 1;
+            }
+        }
+        else
+        {
+            if (((cache[2] & (1 << 4))) == 0)  //到达满水位
+            {
+                cache[5] = 3;
+            }
+            else
+            {
+                cache[5] = 1;
+            }
+        }
+    }
+    else  //缺水
+    {
+        cache[5] = 0;
+    }
+    WriteDGUS(0xa0a0, (u8*)&cache[5], 2);
+
+    //滤芯状态
+    if (cache[3] & (1 << 14))
+    {
+        if (cache[3] & (1 << 15))
+        {
+            cache[5] = 6;
+        }
+        else
+        {
+            cache[5] = 1;
+        }
+    }
+    else if (cache[3] & (1 << 15))
+    {
+        cache[5] = 2;
+    }
+    else if (cache[4] & (1 << 0))
+    {
+        cache[5] = 3;
+    }
+    else if (cache[4] & (1 << 1))
+    {
+        cache[5] = 4;
+    }
+    else if (cache[4] & (1 << 2))
+    {
+        cache[5] = 5;
+    }
+    else
+    {
+        cache[5] = 0;
+    }
+    WriteDGUS(0xa0a1, (u8*)&cache[5], 2);
+
+    cache[3] &= 0x1FFF;
+    for (i = 0; i < 2; i++)
+    {
+        for (j = 0; j < 16; j++)
+        {
+            if (cache[3 + i] & (1 << j))
+            {
+                alarmCache[k++] = j + 1 + (16 * i);
+            }
+            if (k >= 6)
+                break;
+        }
+        if (k >= 6)
+            break;
+    }
+    WriteDGUS(0xa0a2, (u8*)&alarmCache[0], 10);
+
+    ReadDGUS(0xa027, (u8*)&cache[6], 6);
+
+    //出水状态
+    if (cache[7] == 1)  //长按出水
+    {
+        cache[9] = 0;
+    }
+    else if (cache[7] == 0)  //点动出水
+    {
+        if ((cache[1] & (1 << 2)) == 0)
+        {
+            cache[9] = 1;
+        }
+        else
+        {
+            cache[9] = 2;
+        }
+    }
+    if (cache[2] & (1 << 3))
+    {
+        if (cache[6] == 0)
+        {
+            cache[9] = 4;
+        }
+        else
+        {
+            cache[9] = 3;
+        }
+    }
+    //贮存状态
+    if (cache[8] == 1)  //"P-外接水源"
+    {
+        cache[9] = 5;
+    }
+    else if (cache[8] == 2)  //"P-外接水源"
+    {
+        cache[9] = 6;
+    }
+    else if (cache[8] == 3)  //"P-外接水源"
+    {
+        cache[9] = 7;
+    }
+    else if (cache[8] == 4)  //"P-外接水源"
+    {
+        cache[9] = 8;
+    }
+    WriteDGUS(0xa0a7, (u8*)&cache[9], 2);
 }

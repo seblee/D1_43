@@ -190,12 +190,15 @@ void touchHandler(void)
                 break;
             case PASSWORD_CHANGE_CANCLE_EVENT:
                 break;
+            case JUMP_TO_SET_0_EVENT:
             case JUMP_TO_SET_1_EVENT:
             case JUMP_TO_SET_2_EVENT:
-            case JUMP_TO_SET_3_EVENT:
                 jumpSetPageEventHandle(touchEventFlag);
                 break;
-
+            case NORMAL_WATEROUT_EVENT:
+            case HOT_WATEROUT_EVENT:
+                WaterOutHandle(touchEventFlag);
+                break;
             // case ALARM_CLEAR_EVENT:
             //     alarmClearHandle();
             //     break;
@@ -242,14 +245,13 @@ void touchHandler(void)
  */
 void jumpSetPageEventHandle(u16 event)
 {
-    u16 cache;
-    ReadDGUS(0xa0a0, (u8 *)&cache, 2);
+    static u16 cache = 0;
     switch (event)
     {
-        case 0xa000:
+        case JUMP_TO_SET_0_EVENT:
             cache = 1;
             break;
-        case 0xa001:
+        case JUMP_TO_SET_1_EVENT:
             if (cache == 1)
             {
                 cache = 3;
@@ -259,7 +261,7 @@ void jumpSetPageEventHandle(u16 event)
                 cache = 0;
             }
             break;
-        case 0xa002:
+        case JUMP_TO_SET_2_EVENT:
             if (cache == 3)
             {
                 passwordPageJumpEventHandle(PASSWORD_PAGEJUMP_0A_EVENT);
@@ -270,7 +272,54 @@ void jumpSetPageEventHandle(u16 event)
             cache = 0;
             break;
     }
-    WriteDGUS(0xa0a0, (u8 *)&cache, 2);
+}
+/**
+ * @brief   waterOut Key
+ * @param  event
+ * 110 waterout mode
+ * 111 water volume
+ */
+void WaterOutHandle(u16 event)
+{
+    u16 cache[4] = {0};
+    ReadDGUS(0xa021, (u8 *)&cache[0], 2);
+    switch (event)
+    {
+        case NORMAL_WATEROUT_EVENT:
+            if (cache[0] & (1 << 2))
+            {
+                cache[1] = 0;
+                cache[2] = 0;
+            }
+            else
+            {
+                cache[1] = 1;
+                cache[2] = 5000;
+            }
+            WriteDGUS(0xa02a, (u8 *)&cache[1], 4);
+            cache[1] = 0x5a;
+            cache[2] = 0x5a;
+            WriteDGUS(0xa08a, (u8 *)&cache[1], 4);
+            break;
+        case HOT_WATEROUT_EVENT:
+            if (cache[0] & (1 << 7))
+            {
+                cache[1] = 0;
+                cache[2] = 0;
+            }
+            else
+            {
+                cache[1] = 2;
+                cache[2] = 5000;
+            }
+            WriteDGUS(0xa02a, (u8 *)&cache[1], 4);
+            cache[1] = 0x5a;
+            cache[2] = 0x5a;
+            WriteDGUS(0xa08a, (u8 *)&cache[1], 4);
+            break;
+        default:
+            break;
+    }
 }
 
 void resetEventHandle(void)

@@ -38,14 +38,22 @@ u32 modbus_tx_process_tick = 0;  // modbus发送命令的时间间隔
 
 const modbosCmd_t modbusCmdlib[] = {
     // en         id         fun    len  timeout      mod    modP     VP  slaveAddr feedback
-    {BUS_EN, SLAVE_ID, BUS_FUN_03H, 0x03, 0xc8, MODE_ALWA, 0x0000, 0xa020, 0x031c, 0x00ff},  //告警数
+    {BUS_EN, SLAVE_ID, BUS_FUN_03H, 0x01, 0xc8, MODE_PAGE, 0x0000, 0xa020, 0x004b, 0x00ff},  // P-DI0
+    {BUS_EN, SLAVE_ID, BUS_FUN_03H, 0x02, 0xc8, MODE_PAGE, 0x0000, 0xa021, 0x01f6, 0x00ff},  //系统状态字 数字输入
+    {BUS_EN, SLAVE_ID, BUS_FUN_03H, 0x02, 0xc8, MODE_PAGE, 0x0000, 0xa023, 0x01f9, 0x00ff},  //告警状态字0 1
+    {BUS_EN, SLAVE_ID, BUS_FUN_03H, 0x02, 0xc8, MODE_PAGE, 0x0000, 0xa025, 0x01ff, 0x00ff},  //温湿度
+    {BUS_EN, SLAVE_ID, BUS_FUN_03H, 0x01, 0xc8, MODE_PAGE, 0x0000, 0xa027, 0x0064, 0x00ff},
+    {BUS_EN, SLAVE_ID, BUS_FUN_03H, 0x01, 0xc8, MODE_PAGE, 0x0000, 0xa028, 0x006d, 0x00ff},
+    {BUS_EN, SLAVE_ID, BUS_FUN_03H, 0x01, 0xc8, MODE_PAGE, 0x0000, 0xa029, 0x0072, 0x00ff},
+    {BUS_EN, SLAVE_ID, BUS_FUN_06H, 0x01, 0xc8, MODE_PARA, 0xa08a, 0xa02a, 0x006e, 0x00ff},  // waterOut key
+    {BUS_EN, SLAVE_ID, BUS_FUN_06H, 0x01, 0xc8, MODE_PARA, 0xa08b, 0xa02b, 0x006f, 0x00ff},  // waterOut key
 };
 modbosCmd_t modbusCmdNow = {0};
 u8 CmdIndex              = 0;
 
 const dataCheckCmd_t dataCheckLib[] = {
     // en     page  data    back   flag
-    {BUS_EN, PAGE19, 0xb320, 0xb350, 0xb380},  //
+    {BUS_DIS, PAGE00, 0xa020, 0xa050, 0xa080},  //
 };
 
 _TKS_FLAGA_type modbusFlag = {0};
@@ -249,9 +257,10 @@ void Modbus_Write_Register10H(modbosCmd_t *CmdNow, u16 value)
 
     len                  = 0;
     modbus_tx_buf[len++] = CmdNow->slaveID;
-    modbus_tx_buf[len++] = BUS_FUN_06H;                      // command
+    modbus_tx_buf[len++] = BUS_FUN_10H;                      // command
     modbus_tx_buf[len++] = (CmdNow->slaveAddr >> 8) & 0xFF;  // register
     modbus_tx_buf[len++] = CmdNow->slaveAddr & 0xFF;
+    modbus_tx_buf[len++] = CmdNow->length * 2;
     modbus_tx_buf[len++] = (value >> 8) & 0xFF;  // register value
     modbus_tx_buf[len++] = value & 0xFF;
     crc_data             = crc16table(modbus_tx_buf, len);

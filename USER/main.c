@@ -57,7 +57,7 @@ void main(void)
 {
     InitSys();
     Modbus_UART_Init();
-    alarmInit();
+    // alarmInit();
     passwordInit();
     while (1)
     {
