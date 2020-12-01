@@ -36,10 +36,10 @@
 
 #include "ui.h"
 #include "timer.h"
-u16 picNow = 0;
+u16 picNow                = 0;
+static u16 childLockCount = 0;
 
 void uiPage00Opt(void);
-
 /**
  * @brief ui task
  */
@@ -89,6 +89,20 @@ void ui(void)
                         JumpPage(0);
                     //用户等级
                 }
+            }
+        }
+        /**
+         * @brief   childLock
+         */
+        {
+            if (childLockCount > 1)
+                childLockCount--;
+            else if (childLockCount == 1)
+            {
+                u16 cache = 0;
+                childLockCount--;
+                cache = 0;
+                WriteDGUS(0xa02c, (u8*)&cache, 2);
             }
         }
     }
@@ -258,4 +272,15 @@ void uiPage00Opt(void)
         cache[9] = 8;
     }
     WriteDGUS(0xa0a7, (u8*)&cache[9], 2);
+}
+
+/**
+ * @brief
+ */
+void heatLockHandle(void)
+{
+    u16 cache      = 0;
+    childLockCount = 11;
+    cache          = 1;
+    WriteDGUS(0xa02c, (u8*)&cache, 2);
 }

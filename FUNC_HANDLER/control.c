@@ -199,6 +199,9 @@ void touchHandler(void)
             case HOT_WATEROUT_EVENT:
                 WaterOutHandle(touchEventFlag);
                 break;
+            case HEAT_LOCK_EVENT:
+                heatLockHandle();
+                break;
             // case ALARM_CLEAR_EVENT:
             //     alarmClearHandle();
             //     break;
@@ -290,32 +293,44 @@ void WaterOutHandle(u16 event)
             {
                 cache[1] = 0;
                 cache[2] = 0;
+                WriteDGUS(0xa02a, (u8 *)&cache[1], 4);
+                cache[1] = 0x5a;
+                cache[2] = 0x5a;
+                WriteDGUS(0xa08a, (u8 *)&cache[1], 4);
             }
-            else
+            else if ((cache[0] & 0x0084) == 0)
             {
                 cache[1] = 1;
                 cache[2] = 5000;
+                WriteDGUS(0xa02a, (u8 *)&cache[1], 4);
+                cache[1] = 0x5a;
+                cache[2] = 0x5a;
+                WriteDGUS(0xa08a, (u8 *)&cache[1], 4);
             }
-            WriteDGUS(0xa02a, (u8 *)&cache[1], 4);
-            cache[1] = 0x5a;
-            cache[2] = 0x5a;
-            WriteDGUS(0xa08a, (u8 *)&cache[1], 4);
             break;
         case HOT_WATEROUT_EVENT:
             if (cache[0] & (1 << 7))
             {
                 cache[1] = 0;
                 cache[2] = 0;
+                WriteDGUS(0xa02a, (u8 *)&cache[1], 4);
+                cache[1] = 0x5a;
+                cache[2] = 0x5a;
+                WriteDGUS(0xa08a, (u8 *)&cache[1], 4);
             }
-            else
+            else if ((cache[0] & 0x0084) == 0)
             {
-                cache[1] = 2;
-                cache[2] = 5000;
+                ReadDGUS(0xa02c, (u8 *)&cache[3], 2);
+                if (cache[3] == 1)
+                {
+                    cache[1] = 2;
+                    cache[2] = 5000;
+                    WriteDGUS(0xa02a, (u8 *)&cache[1], 4);
+                    cache[1] = 0x5a;
+                    cache[2] = 0x5a;
+                    WriteDGUS(0xa08a, (u8 *)&cache[1], 4);
+                }
             }
-            WriteDGUS(0xa02a, (u8 *)&cache[1], 4);
-            cache[1] = 0x5a;
-            cache[2] = 0x5a;
-            WriteDGUS(0xa08a, (u8 *)&cache[1], 4);
             break;
         default:
             break;
