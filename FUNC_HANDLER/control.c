@@ -202,32 +202,30 @@ void touchHandler(void)
             case HEAT_LOCK_EVENT:
                 heatLockHandle();
                 break;
-            // case ALARM_CLEAR_EVENT:
-            //     alarmClearHandle();
-            //     break;
-            // case CUR_ALARM_CLEAR_EVENT:
-            //     curAlarmClearHandle();
-            //     break;
-            // case OUTPUT_EVENT:
-            //     forcedOutputHnadle();
-            //     break;
-            // case RESET_EVENT:
-            //     resetEventHandle();
-            //     break;
-            // case IN_MAINTAIN_MOD_EVENT:
-            //     inMaintainModEventHandle();
-            //     break;
-            // case OUT_MAINTAIN_MOD_EVENT:
-            //     outMaintainModEventHandle();
-            //     break;
-
-            // case CLEAR_RUNTIME_EVENT_0D:
-            // case CLEAR_RUNTIME_EVENT_07:
-            // case CLEAR_RUNTIME_EVENT_01:
-            // case CLEAR_RUNTIME_EVENT_0E:
-            // case CLEAR_RUNTIME_EVENT_11:
-            //     clearRunTimeHandle(touchEventFlag);
-            //     break;
+                // case ALARM_CLEAR_EVENT:
+                //     alarmClearHandle();
+                //     break;
+                // case CUR_ALARM_CLEAR_EVENT:
+                //     curAlarmClearHandle();
+                //     break;
+                // case OUTPUT_EVENT:
+                //     forcedOutputHnadle();
+                //     break;
+                // case RESET_EVENT:
+                //     resetEventHandle();
+                //     break;
+                // case IN_MAINTAIN_MOD_EVENT:
+                //     inMaintainModEventHandle();
+                //     break;
+                // case OUT_MAINTAIN_MOD_EVENT:
+                //     outMaintainModEventHandle();
+                //     break;
+            case CLEAR_RUNTIME_EVENT_08:
+            case CLEAR_RUNTIME_EVENT_21:
+            case CLEAR_RUNTIME_EVENT_22:
+            case CLEAR_RUNTIME_EVENT_23:
+                clearRunTimeHandle(touchEventFlag);
+                break;
 
             // case REST_ORIGINAL_PARA:
             //     resetOriginalPara();
@@ -348,9 +346,9 @@ void resetEventHandle(void)
 void clearRunTimeHandle(u16 eventId)
 {
     u16 cache = eventId & 0xff;
-    WriteDGUS(0xc930, (u8 *)&cache, 2);
+    WriteDGUS(0xb320, (u8 *)&cache, 2);
     cache = 0x005a;
-    WriteDGUS(0xc990, (u8 *)&cache, 2);
+    WriteDGUS(0xb380, (u8 *)&cache, 2);
 }
 
 void inMaintainModEventHandle(void)
