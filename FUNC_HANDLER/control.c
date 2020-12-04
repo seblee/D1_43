@@ -202,12 +202,12 @@ void touchHandler(void)
             case HEAT_LOCK_EVENT:
                 heatLockHandle();
                 break;
-                // case ALARM_CLEAR_EVENT:
-                //     alarmClearHandle();
-                //     break;
-                // case CUR_ALARM_CLEAR_EVENT:
-                //     curAlarmClearHandle();
-                //     break;
+            // case ALARM_CLEAR_EVENT:
+            //     alarmClearHandle();
+            //     break;
+            case CUR_ALARM_CLEAR_EVENT:
+                curAlarmClearHandle();
+                break;
                 // case OUTPUT_EVENT:
                 //     forcedOutputHnadle();
                 //     break;
