@@ -140,6 +140,12 @@ const modbosCmd_t modbusCmdlib[] = {
     {BUS_EN, SLAVE_ID, BUS_FUN_03H, 0x01, 0xc8, MODE_PANP, 0xb500, 0xb520, 0x0072, PAGE21},
     {BUS_EN, SLAVE_ID, BUS_FUN_06H, 0x01, 0xc8, MODE_PANP, 0xb580, 0xb520, 0x0072, PAGE21},
     {BUS_EN, SLAVE_ID, BUS_FUN_06H, 0x01, 0xc8, MODE_PANP, 0xb581, 0xb521, 0x0083, PAGE21},
+    {BUS_EN, SLAVE_ID, BUS_FUN_03H, 0x01, 0xc8, MODE_PANP, 0xb800, 0xb821, 0x0078, PAGE24},
+    {BUS_EN, SLAVE_ID, BUS_FUN_03H, 0x02, 0xc8, MODE_PAGE, PAGE24, 0xb822, 0x00a3, PAGE24},
+    {BUS_EN, SLAVE_ID, BUS_FUN_06H, 0x01, 0xc8, MODE_PANP, 0xb884, 0xb824, 0x0078, PAGE24},
+    {BUS_EN, SLAVE_ID, BUS_FUN_06H, 0x01, 0xc8, MODE_PANP, 0xb881, 0xb821, 0x0079, PAGE24},
+    {BUS_EN, SLAVE_ID, BUS_FUN_06H, 0x01, 0xc8, MODE_PANP, 0xc080, 0xc020, 0x0083, PAGE32},
+    {BUS_EN, SLAVE_ID, BUS_FUN_03H, 0x06, 0xc8, MODE_PAGE, PAGE34, 0xc2a0, 0x0320, 0x00ff},  //告警
 };
 modbosCmd_t modbusCmdNow = {0};
 u8 CmdIndex              = 0;
@@ -196,6 +202,7 @@ const dataCheckCmd_t dataCheckLib[] = {
     {BUS_EN, PAGE20, 0xb426, 0xb456, 0xb486},  //
     {BUS_EN, PAGE20, 0xb427, 0xb457, 0xb487},  //
     {BUS_EN, PAGE21, 0xb520, 0xb550, 0xb580},  //
+    {BUS_EN, PAGE24, 0xb821, 0xb851, 0xb881},  //
 };
 
 _TKS_FLAGA_type modbusFlag = {0};

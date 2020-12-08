@@ -50,10 +50,10 @@
 #define ALARMDATALAG 0xa55a
 #define ALARMINFOFLAG 0x5aa5
 
-#define CURRENTALARMPAGE 13
-#define ALARMHISTORYAGE 14
-#define ALARMPAGEADDR 0xae01
-#define alarmStateVP 0xaea0  // 8个
+#define CURRENTALARMPAGE 34
+#define ALARMHISTORYAGE 35
+#define ALARMPAGEADDR 0xc201
+#define alarmStateVP 0xc2a0  // 8个
 #define alarmVPStart 0x3500  // 24*116
 // show alarm list description
 #define SHOWTIMESTART0 0x4000
@@ -135,7 +135,7 @@ void saveAlarmHistory(void);
 void setAlarmDisplay(u8 index, u16 vp, u8 page);
 void resetAlarmDisplay(u8 index);
 void alarmClearHandle(void);
-void curAlarmClearHandle(void);
+void curAlarmClearHandle(u16 event);
 void alarmConfirmEventHandle(void);
 
 #endif

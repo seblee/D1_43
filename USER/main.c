@@ -57,7 +57,7 @@ void main(void)
 {
     InitSys();
     Modbus_UART_Init();
-    // alarmInit();
+    alarmInit();
     passwordInit();
     while (1)
     {
@@ -78,7 +78,7 @@ void main(void)
         // HandleProc();
         Modbus_Process_Task();  // Modbus串口处理流程
         ui();
-        // alarmTask();
+        alarmTask();
         touchHandler();
         // passwordTask();
         if (MS1msFlag)

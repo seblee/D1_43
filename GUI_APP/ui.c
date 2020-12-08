@@ -36,10 +36,12 @@
 
 #include "ui.h"
 #include "timer.h"
-u16 picNow                = 0;
-static u16 childLockCount = 0;
+u16 picNow                 = 0;
+static u16 childLockCount  = 0;
+const u16 factorySetData[] = {0x0069, 0x005a, 0x003c, 0x0015};
 
 void uiPage00Opt(void);
+
 /**
  * @brief ui task
  */
@@ -51,7 +53,24 @@ void ui(void)
     }
     if (MS500msFlag)
     {
-        if (picNow == 0x002c)
+        if (picNow == PAGE00)
+        {
+            uiPage00Opt();
+        }
+        if (picNow == PAGE24)
+        {
+            u16 cache[4];
+            ReadDGUS(0xb820, (u8*)&cache[0], 2);
+            if ((cache[0] != 0) && (cache[0] <= 4))
+            {
+                WriteDGUS(0xb824, (u8*)&factorySetData[cache[0] - 1], 2);
+                cache[0] = 0x005a;
+                WriteDGUS(0xb884, (u8*)&cache[0], 2);
+                cache[0] = 0;
+                WriteDGUS(0xb820, (u8*)&cache[0], 2);
+            }
+        }
+        if (picNow == PAGE44)
         {
             u16 cache[4];
             ReadDGUS(0xcca0, (u8*)&cache[3], 2);
@@ -60,10 +79,6 @@ void ui(void)
             cache[1] = ((cache[3] & 0x007f) << 8);
             cache[2] = SOFTWARE_VER;
             WriteDGUS(0xcc20, (u8*)cache, 6);
-        }
-        if (picNow == PAGE00)
-        {
-            uiPage00Opt();
         }
         /**
          * @brief   standby

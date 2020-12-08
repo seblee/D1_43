@@ -43,22 +43,21 @@
 #include "ChineseCharacter.h"
 
 #define START_Xs 105
-#define START_Ys 100
+#define START_Ys 70
 #define START_Xe 285
-#define START_Ye 125
+#define START_Ye 100
 
 #define END_Xs 295
-#define END_Ys 100
+#define END_Ys 70
 #define END_Xe 475
-#define END_Ye 125
+#define END_Ye 100
 
-#define STRING_Xs 485
-#define STRING_Ys 100
-#define STRING_Xe 685
-#define STRING_Ye 125
+#define STRING_Xs 530
+#define STRING_Ys 70
+#define STRING_Xe 730
+#define STRING_Ye 100
 
-#define END_X 295
-#define STRING_X 485
+#define LINE_SPACING 36
 const dgus_hex_t showStartDesConst = {
     0x3fc9,    //.VP
     START_Xs,  //.X
@@ -170,17 +169,17 @@ void alarmInit(void)
     {
         u16 showTemp[16] = {0};
         memcpy(showTemp, &showStartDesConst, sizeof(dgus_hex_t));
-        ((dgus_hex_t *)showTemp)->Y      = START_Ys + 27 * i;
+        ((dgus_hex_t *)showTemp)->Y      = START_Ys + LINE_SPACING * i;
         ((dgus_hex_t *)showTemp)->Lib_ID = 1;
         WriteDGUS(alarmShowDescriptionVP[i][0], (u8 *)showTemp, sizeof(showTemp));
         memcpy(showTemp, &showEndDesConst, sizeof(dgus_hex_t));
-        ((dgus_hex_t *)showTemp)->Y      = END_Ys + 27 * i;
+        ((dgus_hex_t *)showTemp)->Y      = END_Ys + LINE_SPACING * i;
         ((dgus_hex_t *)showTemp)->Lib_ID = 1;
         WriteDGUS(alarmShowDescriptionVP[i][1], (u8 *)showTemp, sizeof(showTemp));
         memcpy(showTemp, &showStringDesConst, sizeof(dgus_string_t));
-        ((dgus_string_t *)showTemp)->Y  = STRING_Ys + 27 * i;
-        ((dgus_string_t *)showTemp)->Ys = STRING_Ys + 27 * i;
-        ((dgus_string_t *)showTemp)->Ye = STRING_Ye + 27 * i;
+        ((dgus_string_t *)showTemp)->Y  = STRING_Ys + LINE_SPACING * i;
+        ((dgus_string_t *)showTemp)->Ys = STRING_Ys + LINE_SPACING * i;
+        ((dgus_string_t *)showTemp)->Ye = STRING_Ye + LINE_SPACING * i;
         WriteDGUS(alarmShowDescriptionVP[i][2], (u8 *)showTemp, sizeof(showTemp));
     }
 }
@@ -192,22 +191,21 @@ void alarmTask(void)
     {
         return;
     }
-    ReadDGUS(0xa021, (u8 *)&cache, 12);  // GET PAGENOW
-    if ((*((u16 *)&cache[0]) > 0) || (*((u16 *)&cache[2]) > 0))
-    {
-        if (alarmCount != (*((u16 *)&cache[0]) + *((u16 *)&cache[2])))
-        {
-            if (alarmCount < (*((u16 *)&cache[0]) + *((u16 *)&cache[2])))
-            {
-                *((u16 *)&cache[10]) = 1;
-                WriteDGUS(ALARM_BEEP_FLAG, (u8 *)&cache[10], 2);
-            }
-            alarmCount = *((u16 *)&cache[0]) + *((u16 *)&cache[2]);
-        }
-
-        if (*((u16 *)&cache[10]))
-            WriteDGUS(WAE_PALY_ADDR, (u8 *)&alarmBeep, 2);  // GET PAGENOW
-    }
+    // ReadDGUS(0xa021, (u8 *)&cache, 12);  // GET PAGENOW
+    // if (alarmCount != (*((u16 *)&cache[0]) + *((u16 *)&cache[2])))
+    // {
+    //     if (alarmCount < (*((u16 *)&cache[0]) + *((u16 *)&cache[2])))
+    //     {
+    //         *((u16 *)&cache[10]) = 1;
+    //         WriteDGUS(ALARM_BEEP_FLAG, (u8 *)&cache[10], 2);
+    //     }
+    //     alarmCount = *((u16 *)&cache[0]) + *((u16 *)&cache[2]);
+    // }
+    // if ((*((u16 *)&cache[0]) > 0) || (*((u16 *)&cache[2]) > 0))
+    // {
+    //     if (*((u16 *)&cache[10]))
+    //         WriteDGUS(WAE_PALY_ADDR, (u8 *)&alarmBeep, 2);  // GET PAGENOW
+    // }
 
     if (picNow == CURRENTALARMPAGE)
     {
@@ -336,11 +334,11 @@ void alarmClearHandle(void)
     WriteDGUS(alarmTemp, (u8 *)&alarmInfomation, sizeof(alarmInfoStrc_t));  // write memory
     T5L_Flash(WRITERFLASH, alarmTemp, ALARM_FLASH_START + alarmInfomation.head_ptr * 8, 4);
 }
-void curAlarmClearHandle(void)
+void curAlarmClearHandle(u16 event)
 {
     u16 cache = 0x005a;
-    WriteDGUS(0xb521, (u8 *)&cache, 2);
-    WriteDGUS(0xb581, (u8 *)&cache, 2);
+    WriteDGUS(event, (u8 *)&cache, 2);
+    WriteDGUS(event + 0x30, (u8 *)&cache, 2);
 }
 void saveAlarmHistory(void)
 {
@@ -373,13 +371,13 @@ void setAlarmDisplay(u8 index, u16 vp, u8 page)
 {
     u16 showTemp[16] = {0};
     memcpy(showTemp, &showStartDesConst, sizeof(dgus_hex_t));
-    ((dgus_hex_t *)showTemp)->Y      = START_Ys + 27 * index;
+    ((dgus_hex_t *)showTemp)->Y      = START_Ys + LINE_SPACING * index;
     ((dgus_hex_t *)showTemp)->Lib_ID = 0;
     ((dgus_hex_t *)showTemp)->VP     = vp + 1;
     WriteDGUS(alarmShowDescriptionVP[index][0], (u8 *)showTemp, sizeof(showTemp));
 
     memcpy(showTemp, &showEndDesConst, sizeof(dgus_hex_t));
-    ((dgus_hex_t *)showTemp)->Y      = END_Ys + 27 * index;
+    ((dgus_hex_t *)showTemp)->Y      = END_Ys + LINE_SPACING * index;
     ((dgus_hex_t *)showTemp)->Lib_ID = ALARMHISTORYAGE - page;
     ((dgus_hex_t *)showTemp)->VP     = vp + 4;
     WriteDGUS(alarmShowDescriptionVP[index][1], (u8 *)showTemp, sizeof(showTemp));
@@ -392,17 +390,17 @@ void resetAlarmDisplay(u8 index)
 {
     u16 showTemp[16] = {0};
     memcpy(showTemp, &showStartDesConst, sizeof(dgus_hex_t));
-    ((dgus_hex_t *)showTemp)->Y      = START_Ys + 27 * index;
+    ((dgus_hex_t *)showTemp)->Y      = START_Ys + LINE_SPACING * index;
     ((dgus_hex_t *)showTemp)->Lib_ID = 1;
     WriteDGUS(alarmShowDescriptionVP[index][0], (u8 *)showTemp, sizeof(showTemp));
     memcpy(showTemp, &showEndDesConst, sizeof(dgus_hex_t));
-    ((dgus_hex_t *)showTemp)->Y      = END_Ys + 27 * index;
+    ((dgus_hex_t *)showTemp)->Y      = END_Ys + LINE_SPACING * index;
     ((dgus_hex_t *)showTemp)->Lib_ID = 1;
     WriteDGUS(alarmShowDescriptionVP[index][1], (u8 *)showTemp, sizeof(showTemp));
     memcpy(showTemp, &showStringDesConst, sizeof(dgus_string_t));
-    ((dgus_string_t *)showTemp)->Y  = STRING_Ys + 27 * index;
-    ((dgus_string_t *)showTemp)->Ys = STRING_Ys + 27 * index;
-    ((dgus_string_t *)showTemp)->Ye = STRING_Ye + 27 * index;
+    ((dgus_string_t *)showTemp)->Y  = STRING_Ys + LINE_SPACING * index;
+    ((dgus_string_t *)showTemp)->Ys = STRING_Ys + LINE_SPACING * index;
+    ((dgus_string_t *)showTemp)->Ye = STRING_Ye + LINE_SPACING * index;
     WriteDGUS(alarmShowDescriptionVP[index][2], (u8 *)showTemp, sizeof(showTemp));
 }
 

@@ -72,7 +72,7 @@ const u8 pageLevel[][2] = {
     {PAGE22, 0},  //  PASSWORD_PAGEJUMP_16_EVENT
     {PAGE23, 0},  //  PASSWORD_PAGEJUMP_17_EVENT
     {PAGE24, 0},  //  PASSWORD_PAGEJUMP_18_EVENT
-    {PAGE25, 0},  //  PASSWORD_PAGEJUMP_19_EVENT
+    {PAGE25, 1},  //  PASSWORD_PAGEJUMP_19_EVENT
     {PAGE26, 0},  //  PASSWORD_PAGEJUMP_1A_EVENT
     {PAGE27, 2},  //  alarmSet
     {PAGE28, 0},  //  PASSWORD_PAGEJUMP_1C_EVENT
@@ -205,8 +205,9 @@ void touchHandler(void)
             // case ALARM_CLEAR_EVENT:
             //     alarmClearHandle();
             //     break;
-            case CUR_ALARM_CLEAR_EVENT:
-                curAlarmClearHandle();
+            case CUR_ALARM_CLEAR_EVENT00:
+            case CUR_ALARM_CLEAR_EVENT01:
+                curAlarmClearHandle(touchEventFlag);
                 break;
                 // case OUTPUT_EVENT:
                 //     forcedOutputHnadle();
@@ -454,7 +455,7 @@ void passwordFunOPThandle(u16 fun)
 {
     if (fun == FUN00)
     {
-        curAlarmClearHandle();
+        // curAlarmClearHandle();
     }
     else if (fun == FUN01)
     {
