@@ -70,15 +70,15 @@ void ui(void)
                 WriteDGUS(0xb820, (u8*)&cache[0], 2);
             }
         }
-        if (picNow == PAGE44)
+        if (picNow == PAGE25)
         {
             u16 cache[4];
-            ReadDGUS(0xcca0, (u8*)&cache[3], 2);
+            ReadDGUS(0xb923, (u8*)&cache[3], 2);
             cache[0] = ((cache[3] >> 4) & 0x0f00);
             cache[0] |= ((cache[3] >> 7) & 0x1f);
             cache[1] = ((cache[3] & 0x007f) << 8);
             cache[2] = SOFTWARE_VER;
-            WriteDGUS(0xcc20, (u8*)cache, 6);
+            WriteDGUS(0xb924, (u8*)cache, 6);
         }
         /**
          * @brief   standby

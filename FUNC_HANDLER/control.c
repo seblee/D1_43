@@ -221,10 +221,14 @@ void touchHandler(void)
                 // case OUT_MAINTAIN_MOD_EVENT:
                 //     outMaintainModEventHandle();
                 //     break;
-            case CLEAR_RUNTIME_EVENT_08:
-            case CLEAR_RUNTIME_EVENT_21:
-            case CLEAR_RUNTIME_EVENT_22:
-            case CLEAR_RUNTIME_EVENT_23:
+
+            case CLEAR_RUNTIME_EVENT_b308:
+            case CLEAR_RUNTIME_EVENT_b321:
+            case CLEAR_RUNTIME_EVENT_b322:
+            case CLEAR_RUNTIME_EVENT_b323:
+            case CLEAR_RUNTIME_EVENT_ba21:
+            case CLEAR_RUNTIME_EVENT_ba22:
+            case CLEAR_RUNTIME_EVENT_ba23:
                 clearRunTimeHandle(touchEventFlag);
                 break;
 
@@ -346,10 +350,11 @@ void resetEventHandle(void)
 
 void clearRunTimeHandle(u16 eventId)
 {
-    u16 cache = eventId & 0xff;
-    WriteDGUS(0xb320, (u8 *)&cache, 2);
+    u16 cache   = eventId & 0xff;
+    u16 address = ((eventId & 0xff00) | 0x0020);
+    WriteDGUS(address, (u8 *)&cache, 2);
     cache = 0x005a;
-    WriteDGUS(0xb380, (u8 *)&cache, 2);
+    WriteDGUS(address + 0x60, (u8 *)&cache, 2);
 }
 
 void inMaintainModEventHandle(void)
@@ -478,6 +483,10 @@ void passwordFunOPThandle(u16 fun)
 void pageHandle(u16 page)
 {
     u16 cache = 0x005a;
+    if (page == PAGE25)
+    {
+        WriteDGUS(0xa000 + (page << 8), (u8 *)&cache, 2);
+    }
     if (page == PAGE27)
     {
         WriteDGUS(0xa000 + (page << 8), (u8 *)&cache, 2);
