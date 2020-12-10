@@ -155,7 +155,7 @@ const modbosCmd_t modbusCmdlib[] = {
     {BUS_EN, SLAVE_ID, BUS_FUN_03H, 0x02, 0xc8, MODE_PAGE, PAGE26, 0xba21, 0x0208, 0x00ff},
     {BUS_EN, SLAVE_ID, BUS_FUN_03H, 0x01, 0xc8, MODE_PAGE, PAGE26, 0xba24, 0x020d, 0x00ff},
     {BUS_EN, SLAVE_ID, BUS_FUN_06H, 0x01, 0xc8, MODE_PANP, 0xc080, 0xc020, 0x0083, PAGE32},
-    {BUS_EN, SLAVE_ID, BUS_FUN_03H, 0x06, 0xc8, MODE_PAGE, PAGE34, 0xc2a0, 0x0320, 0x00ff},  //告警
+    {BUS_EN, SLAVE_ID, BUS_FUN_03H, 0x02, 0xc8, MODE_PAGE, PAGE34, 0xc2a0, 0x01f9, 0x00ff},  //告警
 };
 modbosCmd_t modbusCmdNow = {0};
 u8 CmdIndex              = 0;
