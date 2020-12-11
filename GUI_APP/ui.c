@@ -243,13 +243,13 @@ void uiPage00Opt(void)
     ReadDGUS(0xa027, (u8*)&cache[6], 6);
 
     //出水状态
-    if (cache[7] == 1)  //长按出水
+    //  if (cache[7] == 1)  //长按出水
     {
         cache[9] = 0;
     }
-    else if (cache[7] == 0)  //点动出水
+    //  else if (cache[7] == 0)  //点动出水
     {
-        if ((cache[1] & (1 << 2)) == 0)
+        if ((cache[1] & (1 << 2)) == 0)  //	if ("S-系统状态字/Out_Water" == 0)
         {
             cache[9] = 1;
         }
@@ -258,7 +258,7 @@ void uiPage00Opt(void)
             cache[9] = 2;
         }
     }
-    if (cache[2] & (1 << 3))
+    if (cache[2] & (1 << 3))  // if (("S-数字输入/DI3") != 0)
     {
         if (cache[6] == 0)
         {
@@ -287,6 +287,17 @@ void uiPage00Opt(void)
         cache[9] = 8;
     }
     WriteDGUS(0xa0a7, (u8*)&cache[9], 2);
+
+    ReadDGUS(0xa02a, (u8*)&cache[6], 2);
+    if (cache[1] & (1 << 2))  //	if ("S-系统状态字/Out_Water" == 0)
+    {
+        cache[7] = cache[6];
+    }
+    else
+    {
+        cache[7] = 0;
+    }
+    WriteDGUS(0xa02d, (u8*)&cache[7], 2);
 }
 
 /**

@@ -292,46 +292,55 @@ void WaterOutHandle(u16 event)
     switch (event)
     {
         case NORMAL_WATEROUT_EVENT:
-            if (cache[0] & (1 << 2))
+            if ((cache[0] & 0x0004))
             {
-                cache[1] = 0;
-                cache[2] = 0;
-                WriteDGUS(0xa02a, (u8 *)&cache[1], 4);
-                cache[1] = 0x5a;
-                cache[2] = 0x5a;
-                WriteDGUS(0xa08a, (u8 *)&cache[1], 4);
+                ReadDGUS(0xa02a, (u8 *)&cache[1], 2);
+                if (cache[1] == 1)
+                {
+                    cache[2] = 0;
+                    cache[3] = 0;
+                    WriteDGUS(0xa02a, (u8 *)&cache[2], 4);
+                    cache[2] = 0x5a;
+                    cache[3] = 0x5a;
+                    WriteDGUS(0xa08a, (u8 *)&cache[2], 4);
+                }
             }
-            else if ((cache[0] & 0x0084) == 0)
+            else
             {
-                cache[1] = 1;
-                cache[2] = 5000;
-                WriteDGUS(0xa02a, (u8 *)&cache[1], 4);
-                cache[1] = 0x5a;
+                cache[2] = 1;
+                cache[3] = 5000;
+                WriteDGUS(0xa02a, (u8 *)&cache[2], 4);
                 cache[2] = 0x5a;
-                WriteDGUS(0xa08a, (u8 *)&cache[1], 4);
+                cache[3] = 0x5a;
+                WriteDGUS(0xa08a, (u8 *)&cache[2], 4);
             }
+
             break;
         case HOT_WATEROUT_EVENT:
-            if (cache[0] & (1 << 7))
+            if ((cache[0] & 0x0004))
             {
-                cache[1] = 0;
-                cache[2] = 0;
-                WriteDGUS(0xa02a, (u8 *)&cache[1], 4);
-                cache[1] = 0x5a;
-                cache[2] = 0x5a;
-                WriteDGUS(0xa08a, (u8 *)&cache[1], 4);
+                ReadDGUS(0xa02a, (u8 *)&cache[1], 2);
+                if (cache[1] == 2)
+                {
+                    cache[2] = 0;
+                    cache[3] = 0;
+                    WriteDGUS(0xa02a, (u8 *)&cache[2], 4);
+                    cache[2] = 0x5a;
+                    cache[3] = 0x5a;
+                    WriteDGUS(0xa08a, (u8 *)&cache[2], 4);
+                }
             }
-            else if ((cache[0] & 0x0084) == 0)
+            else
             {
                 ReadDGUS(0xa02c, (u8 *)&cache[3], 2);
                 if (cache[3] == 1)
                 {
-                    cache[1] = 2;
-                    cache[2] = 5000;
-                    WriteDGUS(0xa02a, (u8 *)&cache[1], 4);
-                    cache[1] = 0x5a;
+                    cache[2] = 2;
+                    cache[3] = 5000;
+                    WriteDGUS(0xa02a, (u8 *)&cache[2], 4);
                     cache[2] = 0x5a;
-                    WriteDGUS(0xa08a, (u8 *)&cache[1], 4);
+                    cache[3] = 0x5a;
+                    WriteDGUS(0xa08a, (u8 *)&cache[2], 4);
                 }
             }
             break;
