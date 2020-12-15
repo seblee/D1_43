@@ -338,7 +338,7 @@ void curAlarmClearHandle(u16 event)
 {
     u16 cache = 0x005a;
     WriteDGUS(event, (u8 *)&cache, 2);
-    WriteDGUS(event + 0x30, (u8 *)&cache, 2);
+    WriteDGUS(event + 0x60, (u8 *)&cache, 2);
 }
 void saveAlarmHistory(void)
 {

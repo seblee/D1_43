@@ -43,7 +43,7 @@
 #include "T5L_lib.h"
 
 u8 password[LEVEL_NUM][4]            = {0};
-const u32 defaultPassword[LEVEL_NUM] = {0, 111111, 2, 160608, 666888, 519525};
+const u32 defaultPassword[LEVEL_NUM] = {0, 666007, 666888, 848187, 180806, 519525};
 u8 passwordGotLevel                  = 0xff;
 
 const u8 pageLevel[][2] = {
@@ -61,20 +61,20 @@ const u8 pageLevel[][2] = {
     {PAGE11, 0},  //  PASSWORD_PAGEJUMP_0B_EVENT
     {PAGE12, 0},  //  PASSWORD_PAGEJUMP_0C_EVENT
     {PAGE13, 0},  //  PASSWORD_PAGEJUMP_0D_EVENT
-    {PAGE14, 0},  //  PASSWORD_PAGEJUMP_0E_EVENT
-    {PAGE15, 1},  //  PASSWORD_PAGEJUMP_0F_EVENT
+    {PAGE14, 2},  //  para set
+    {PAGE15, 0},  //  PASSWORD_PAGEJUMP_0F_EVENT
     {PAGE16, 0},  //  PASSWORD_PAGEJUMP_10_EVENT
     {PAGE17, 0},  //  PASSWORD_PAGEJUMP_11_EVENT
-    {PAGE18, 2},  //  setSys
+    {PAGE18, 3},  //  maintain page
     {PAGE19, 0},  //  PASSWORD_PAGEJUMP_13_EVENT
     {PAGE20, 0},  //  PASSWORD_PAGEJUMP_14_EVENT
     {PAGE21, 0},  //  PASSWORD_PAGEJUMP_15_EVENT
     {PAGE22, 0},  //  PASSWORD_PAGEJUMP_16_EVENT
     {PAGE23, 0},  //  PASSWORD_PAGEJUMP_17_EVENT
-    {PAGE24, 0},  //  PASSWORD_PAGEJUMP_18_EVENT
-    {PAGE25, 1},  //  PASSWORD_PAGEJUMP_19_EVENT
+    {PAGE24, 4},  //  factory set
+    {PAGE25, 0},  //  PASSWORD_PAGEJUMP_19_EVENT
     {PAGE26, 0},  //  PASSWORD_PAGEJUMP_1A_EVENT
-    {PAGE27, 2},  //  alarmSet
+    {PAGE27, 0},  //  PASSWORD_PAGEJUMP_1B_EVENT
     {PAGE28, 0},  //  PASSWORD_PAGEJUMP_1C_EVENT
     {PAGE29, 0},  //  PASSWORD_PAGEJUMP_1D_EVENT
     {PAGE30, 0},  //  PASSWORD_PAGEJUMP_1E_EVENT
@@ -85,7 +85,7 @@ const u8 pageLevel[][2] = {
     {PAGE35, 0},  //  PASSWORD_PAGEJUMP_23_EVENT
     {PAGE36, 0},  //  PASSWORD_PAGEJUMP_24_EVENT
     {PAGE37, 0},  //  PASSWORD_PAGEJUMP_25_EVENT
-    {PAGE38, 2},  //  MAINTAIM PAGE
+    {PAGE38, 0},  //  PASSWORD_PAGEJUMP_26_EVENT
     {PAGE39, 0},  //  PASSWORD_PAGEJUMP_27_EVENT
     {PAGE40, 0},  //  PASSWORD_PAGEJUMP_28_EVENT
     {PAGE41, 0},  //  PASSWORD_PAGEJUMP_29_EVENT
@@ -94,7 +94,7 @@ const u8 pageLevel[][2] = {
     {PAGE44, 0},  //  PASSWORD_PAGEJUMP_2C_EVENT
     {PAGE45, 0},  //  PASSWORD_PAGEJUMP_2D_EVENT
     {PAGE46, 0},  //  PASSWORD_PAGEJUMP_2E_EVENT
-    {PAGE47, 3},  //  sysConfig
+    {PAGE47, 0},  //  PASSWORD_PAGEJUMP_2F_EVENT
     {PAGE48, 0},  //  PASSWORD_PAGEJUMP_30_EVENT
     {PAGE49, 0},  //  PASSWORD_PAGEJUMP_31_EVENT
 };
@@ -492,15 +492,11 @@ void passwordFunOPThandle(u16 fun)
 void pageHandle(u16 page)
 {
     u16 cache = 0x005a;
-    if (page == PAGE25)
+    if (page == PAGE14)
     {
         WriteDGUS(0xa000 + (page << 8), (u8 *)&cache, 2);
     }
-    if (page == PAGE27)
-    {
-        WriteDGUS(0xa000 + (page << 8), (u8 *)&cache, 2);
-    }
-    if (page == PAGE47)
+    if (page == PAGE24)
     {
         WriteDGUS(0xa000 + (page << 8), (u8 *)&cache, 2);
     }
